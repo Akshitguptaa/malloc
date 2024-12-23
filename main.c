@@ -36,7 +36,40 @@ void func2(){
     freeMemory();
 }
 
+void func3(){
+    initMemory();
+
+    printf("using malloc-> \n");
+    int *arr=(int *)nakli_malloc(5 * sizeof(int));
+    for(int i=0;i<5;i++) {
+        arr[i] = i * 10;
+        printf("%d ",arr[i]);
+    }
+    printf("\n");
+
+    printf("using realloc-> \n");
+    arr=(int *)nakli_realloc(arr,10*sizeof(int));
+    for(int i=5;i<10;i++) {
+        arr[i] = i * 10;
+        printf("%d ",arr[i]);
+    }
+    printf("\n");
+
+    printf("using calloc-> \n");
+    int *arr1 = (int *)nakli_calloc(5, sizeof(int));
+    for(int i=0;i<5;i++) {
+        printf("%d ",arr1[i]);
+    }
+    printf("\n");
+
+    nakli_free(arr);
+    nakli_free(arr1);
+
+    freeMemory();
+}
+
 int main(){
     // func1();
-    func2();
+    // func2();
+    func3();
 }

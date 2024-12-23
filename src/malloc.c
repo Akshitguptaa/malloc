@@ -1,5 +1,7 @@
 #include"init.h"
 #include"malloc.h"
+#include<math.h>
+#include<string.h>
 
 void printList(){
     block *temp=head;
@@ -21,7 +23,7 @@ void nakli_free(void *ptr){
     // block->free=1;
     if (!ptr) return;
 
-    printList();
+    // printList();
     block *curr=ptr-blockSize;
     curr->free=1;
 
@@ -41,5 +43,53 @@ void nakli_free(void *ptr){
         }
         temp = temp->next;
     }
-    printList();
+    // printList();
+}
+
+void *nakli_calloc(size_t num,size_t size) {    
+    size*=num;
+
+    void *ptr = nakli_malloc(size);
+    if(!ptr){
+        return ptr;
+    }
+        char *byte= ptr;
+        for(size_t i=0;i<size;i++){
+            byte[i]=0;
+        }
+
+
+    return ptr;
+}
+
+void *nakli_realloc(void *ptr,size_t size){
+    // printList();
+    if(!ptr){
+        return nakli_malloc(size);
+    }
+        // when size==NULL
+    if(size==0){
+        nakli_free(ptr);
+        return NULL;
+    }
+
+    block *curr=ptr-blockSize;
+
+    if(curr->size>=size){
+        if(curr->next && curr->next->free){
+            curr->size=size;
+            return ptr;
+        }
+    }
+
+    void *temp=nakli_malloc(size);
+    if(temp){
+        // purane data to new mei 
+        memcpy(temp,ptr,fmin(curr->size,size));
+
+
+        nakli_free(ptr);
+    }
+    // printList();
+    return temp;
 }
