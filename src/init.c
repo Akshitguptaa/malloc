@@ -1,8 +1,10 @@
 #include"init.h"
 #include <errno.h>
+#include<stdlib.h>
 #define MINREQ 0x20000
 
 void *memory = NULL;
+size_t endpos = 0;
 
 void initMemory(){
     // checking for maximum memory 
@@ -28,4 +30,38 @@ void initMemory(){
 
 void freeMemory(){
     free(memory);
+}
+
+void *head=NULL;
+block *findFreeBlock(block **last, size_t size){
+    block *temp=head;
+    // checking for free block with temp->size>=size(required)
+    while(temp && !(temp->free && temp->size>=size)){
+        *last=temp;
+        temp=temp->next;
+    }
+    return temp;
+}
+
+block *request_block(size_t size){
+    block *last =NULL;
+    block *block=findFreeBlock(&last, size);
+    if(block){
+        block->free = 0;
+        return block;
+    }
+    block=memory+endpos;
+    endpos+=blockSize+size;
+    // if no free block present allocate new memory
+    if(last){
+        last->next=block;
+    }
+
+    else{
+        head=block;
+    }
+    block->free=0;
+    block->next=NULL;
+    block->size=size;
+    return block;
 }
